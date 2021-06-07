@@ -1,0 +1,41 @@
+-- select * from session where newtime<(select TO_TIMESTAMP(session_start_time,'HH24:MI:SS') as newtime from sessions);
+
+-- typecasting a column into time and querying the values 
+select CAST(session_start_time as time) as stime from sessions where CAST(session_start_time as time) < '09:00:00';
+select stime where stime < '09:00:00';
+
+select * from sessions;
+
+-- using self join
+-- Checking for session clashes. (i.e) if two sessions are scheduled in the same timing at the same venue
+select * from sessions e inner join sessions m on e.session_course_ref = m.session_course_ref 
+where e.session_date = m.session_date and e.session_start_time = m.session_start_time
+and e.session_room = m.session_room
+and e.session_course_ref <> m.session_course_ref;
+
+select * from exams where exams.exam_course_code='SE_ADV_JAVA';
+
+-- Number of exams per subject(per course)
+select courses.course_code,exams.exam_type,COUNT(*) as "Number of exams" from exams
+inner join courses on exams.exam_course_code = courses.course_code
+group by courses.course_code,exams.exam_type
+order by course_code;
+
+select * from courses;
+select * from attendance;
+
+-- selecting the day when most of the students are absent for the course
+select attendance_session_date_ref,attendance_course_ref,COUNT(*) as counts from attendance where
+attendance_presence=0 
+group by attendance_session_date_ref,attendance_course_ref
+order by attendance_course_ref asc, counts desc;
+
+select * from attendance where
+attendance_presence=0  and attendance_course_ref='AI_DATA_SCIENCE_IN_PROD'
+order by attendance_session_date_ref;
+
+select * from attendance where attendance_course_ref = 'PM_AGILE' and attendance_presence=0
+order by attendance_session_date_ref;
+
+select cast(attendance_session_date_ref as date) from attendance;
+
